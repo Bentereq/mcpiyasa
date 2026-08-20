@@ -1,5 +1,5 @@
 # MCPiyasa yapılandırması. Her değerin işlevi ve geçerli aralığı yanında yazar.
-dil: tr                      # tr | en
+dil: tr                      # tr | en | de | fr | es | pt | ru | pl | it | zh
 motor:
   spread: 0.10               # Sonlu 0.02..1; ~%1.7 altı çapraz-ağırlık konvekslik arbitrajı açabilir.
   toparlanma-katsayisi: 0.05 # Sonlu 0..1; her tikte stoğun tabana yaklaşma oranı, 0 kapalı.

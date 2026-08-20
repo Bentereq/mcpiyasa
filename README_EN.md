@@ -14,7 +14,7 @@ MCPiyasa is a dynamic market plugin for Minecraft servers that changes prices in
 - Optional 24-hour change percentages, trend arrows, and gainers/losers view.
 - `MCPiyasaAPI`, three custom Bukkit events, and PlaceholderAPI placeholders.
 - Startup diagnostics, trade-error tracking, and a safe mode that locks trading.
-- Turkish and English player messages through `messages_tr.yml` and `messages_en.yml`.
+- Player messages in 10 languages (`dil` setting): Turkish, English, German, French, Spanish, Portuguese, Russian, Polish, Italian, Chinese — each editable via `messages_<lang>.yml`.
 - Spigot and Paper 1.16.5 → 1.21.4+ support; Java 8 bytecode, pure Bukkit API, no NMS or reflection.
 - Persistence of price state, transaction logs, volume profiles, and daily price snapshots in SQLite.
 - A transaction flow that validates money and item transfers and attempts to roll back the first step if the second fails.

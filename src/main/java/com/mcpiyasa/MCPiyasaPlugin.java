@@ -81,6 +81,10 @@ public final class MCPiyasaPlugin extends JavaPlugin
         implements Listener, AdminGuiHost {
     private static final String DATABASE_FILE_NAME = "mcpiyasa.db";
     private static final String ITEMS_FILE_NAME = "items.yml";
+    /** Paketle birlikte gelen mesaj dilleri; ilk acilista data klasorune kopyalanir. */
+    private static final String[] MESAJ_DILLERI = {
+        "tr", "en", "de", "fr", "es", "pt", "ru", "pl", "it", "zh"
+    };
     private static final long MINUTE_TICKS = 1200L;
     private static final long AUTOSAVE_TICKS = 5L * 60L * 20L;
     private static final long PAPI_CACHE_TICKS = 100L;
@@ -298,8 +302,9 @@ public final class MCPiyasaPlugin extends JavaPlugin
             activateSafeMode("Varsayilan config.yml kaydedilemedi", failure);
         }
         saveResourceIfAbsent(ITEMS_FILE_NAME);
-        saveResourceIfAbsent("messages_tr.yml");
-        saveResourceIfAbsent("messages_en.yml");
+        for (String dil : MESAJ_DILLERI) {
+            saveResourceIfAbsent("messages_" + dil + ".yml");
+        }
     }
 
     private void saveResourceIfAbsent(String resourceName) {

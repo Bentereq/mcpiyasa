@@ -58,7 +58,7 @@ Marketin oyuncuya görünen adı (menü başlığı ve sohbet öneki) varsayıla
 
 | Anahtar | Varsayılan | Ne işe yarar |
 |---|---:|---|
-| `dil` | `tr` | Mesaj dili: `tr` veya `en`. |
+| `dil` | `tr` | Mesaj dili: `tr`, `en`, `de`, `fr`, `es`, `pt`, `ru`, `pl`, `it`, `zh`. Her dilin metni `messages_<dil>.yml` dosyasından düzenlenebilir. |
 | `motor.spread` | `0.10` | Alış/satış fiyatı arasındaki oran. Aralık `0.02..1`; ~`%1.7` altı çapraz-ağırlık konvekslik arbitrajı açabilir. |
 | `motor.toparlanma-katsayisi` | `0.05` | Her toparlanma tikinde sanal stoğun tabana yaklaşma oranı; `0` kapalı. |
 | `motor.toparlanma-dakika` | `10` | Toparlanma tikleri arası dakika (en az 1). |
