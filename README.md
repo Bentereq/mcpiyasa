@@ -15,6 +15,7 @@ MCPiyasa, Minecraft sunucuları için fiyatları her alış ve satıştan sonra 
 - `MCPiyasaAPI`, üç özel Bukkit eventi ve PlaceholderAPI placeholder'ları.
 - Açılış teşhisi, işlem hatası takibi ve ticareti kilitleyen güvenli mod.
 - 10 dilde oyuncu mesajları (`dil` ayarı): Türkçe, İngilizce, Almanca, Fransızca, İspanyolca, Portekizce, Rusça, Lehçe, İtalyanca, Çince — her biri `messages_<dil>.yml` ile düzenlenebilir.
+- Ürün görünen adları resmi Minecraft çevirilerinden gelen `item-names_<dil>.yml` dosyasından okunur; sunucu sahibi bunları düzenleyebilir, bilinmeyen ürünler için otomatik İngilizce ad üretilir.
 - Spigot ve Paper 1.16.5 → 1.21.4+ desteği; Java 8 bytecode, saf Bukkit API, NMS ve reflection yok.
 - SQLite üzerinde fiyat durumu, işlem günlüğü, hacim profili ve günlük fiyat anlık görüntüsü kalıcılığı.
 - Para ve item aktarımını doğrulayan, başarısız ikinci adımda ilk adımı geri almaya çalışan işlem akışı.

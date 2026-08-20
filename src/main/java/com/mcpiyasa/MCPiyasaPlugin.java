@@ -12,6 +12,7 @@ import com.mcpiyasa.api.MCPiyasaAPI;
 import com.mcpiyasa.api.PapiHook;
 import com.mcpiyasa.compat.SchedulerCompat;
 import com.mcpiyasa.config.ConfigLoader;
+import com.mcpiyasa.config.ItemNames;
 import com.mcpiyasa.config.ItemsLoader;
 import com.mcpiyasa.config.Messages;
 import com.mcpiyasa.config.ParsedItems;
@@ -97,6 +98,7 @@ public final class MCPiyasaPlugin extends JavaPlugin
     private SafeMode safeMode;
     private PluginSettings settings;
     private Messages messages;
+    private ItemNames itemNames;
     private ParsedItems parsedItems;
     private Clock clock;
 
@@ -278,6 +280,12 @@ public final class MCPiyasaPlugin extends JavaPlugin
     }
 
     @Override
+    public ItemNames itemNames() {
+        RuntimeServices services = activeServices;
+        return services == null ? itemNames : services.definitions.itemNames;
+    }
+
+    @Override
     public MarketService marketService() {
         RuntimeServices services = activeServices;
         return services == null ? null : services.marketService;
@@ -304,6 +312,7 @@ public final class MCPiyasaPlugin extends JavaPlugin
         saveResourceIfAbsent(ITEMS_FILE_NAME);
         for (String dil : MESAJ_DILLERI) {
             saveResourceIfAbsent("messages_" + dil + ".yml");
+            saveResourceIfAbsent("item-names_" + dil + ".yml");
         }
     }
 
@@ -324,6 +333,7 @@ public final class MCPiyasaPlugin extends JavaPlugin
         boolean successful = true;
         PluginSettings loadedSettings;
         Messages loadedMessages;
+        ItemNames loadedItemNames;
         ParsedItems loadedItems;
 
         try {
@@ -358,6 +368,19 @@ public final class MCPiyasaPlugin extends JavaPlugin
         }
 
         try {
+            loadedItemNames = loadItemNames(new File(
+                getDataFolder(), "item-names_" + language + ".yml"));
+        } catch (IOException | InvalidConfigurationException | RuntimeException failure) {
+            successful = false;
+            activateSafeMode(
+                targetSafeMode,
+                "item-names_" + language
+                    + ".yml yuklenemedi; paket urun adlari kullaniliyor",
+                failure);
+            loadedItemNames = loadDefaultItemNames(language, targetSafeMode);
+        }
+
+        try {
             loadedItems = ItemsLoader.load(
                 loadYaml(new File(getDataFolder(), ITEMS_FILE_NAME)),
                 loadedSettings.varsayilanTabanStok,
@@ -384,7 +407,8 @@ public final class MCPiyasaPlugin extends JavaPlugin
             loadedItems = loadDefaultItems(loadedSettings, targetSafeMode);
         }
         return new Definitions(
-            loadedSettings, loadedMessages, loadedItems, successful);
+            loadedSettings, loadedMessages, loadedItemNames, loadedItems,
+            successful);
     }
 
     /** Canli alanlara veya mevcut kayitlara dokunmadan yeni runtime'i kurar. */
@@ -432,7 +456,8 @@ public final class MCPiyasaPlugin extends JavaPlugin
                 public void run() {
                     notifySafeModeAdmins(targetSafeMode);
                 }
-            });
+            },
+            definitions.itemNames);
         Change24h change24h = new Change24h(
             candidateEngine, snapshotRepo, clock);
         ApiImpl api = new ApiImpl(
@@ -468,6 +493,7 @@ public final class MCPiyasaPlugin extends JavaPlugin
             definitions.parsedItems,
             definitions.settings,
             definitions.messages,
+            definitions.itemNames,
             candidateEngine,
             candidateMarketService);
         marketCommand.setAdminDelegate(adminCommands);
@@ -476,6 +502,7 @@ public final class MCPiyasaPlugin extends JavaPlugin
             definitions.parsedItems,
             definitions.settings,
             definitions.messages,
+            definitions.itemNames,
             candidateEngine,
             candidateMarketService,
             change24h,
@@ -491,6 +518,7 @@ public final class MCPiyasaPlugin extends JavaPlugin
                 definitions.parsedItems,
                 definitions.settings,
                 definitions.messages,
+                definitions.itemNames,
                 candidateMarketService,
                 change24h)
             : null;
@@ -1003,6 +1031,7 @@ public final class MCPiyasaPlugin extends JavaPlugin
     private void applyDefinitions(Definitions definitions) {
         settings = definitions.settings;
         messages = definitions.messages;
+        itemNames = definitions.itemNames;
         parsedItems = definitions.parsedItems;
     }
 
@@ -1433,6 +1462,24 @@ public final class MCPiyasaPlugin extends JavaPlugin
         }
     }
 
+    private ItemNames loadDefaultItemNames(
+            String language, SafeMode targetSafeMode) {
+        try {
+            return loadBundledItemNames("item-names_" + language + ".yml");
+        } catch (IOException | RuntimeException languageFailure) {
+            try {
+                return loadBundledItemNames("item-names_en.yml");
+            } catch (IOException | RuntimeException fallbackFailure) {
+                languageFailure.addSuppressed(fallbackFailure);
+                activateSafeMode(
+                    targetSafeMode,
+                    "Paket urun adlari yuklenemedi",
+                    languageFailure);
+                return ItemNames.empty();
+            }
+        }
+    }
+
     private ParsedItems loadDefaultItems(
             PluginSettings targetSettings, SafeMode targetSafeMode) {
         try {
@@ -1492,6 +1539,19 @@ public final class MCPiyasaPlugin extends JavaPlugin
         }
     }
 
+    private static ItemNames loadItemNames(File file)
+            throws IOException, InvalidConfigurationException {
+        loadYaml(file);
+        try (Reader reader = new InputStreamReader(
+                new FileInputStream(file), StandardCharsets.UTF_8)) {
+            ItemNames loaded = ItemNames.load(reader);
+            if (loaded.keys().isEmpty()) {
+                throw new IOException("Urun adi dosyasi bos: " + file);
+            }
+            return loaded;
+        }
+    }
+
     private Messages loadBundledMessages(String resourceName) throws IOException {
         InputStream stream = getResource(resourceName);
         if (stream == null) {
@@ -1507,18 +1567,38 @@ public final class MCPiyasaPlugin extends JavaPlugin
         }
     }
 
+    private ItemNames loadBundledItemNames(String resourceName)
+            throws IOException {
+        InputStream stream = getResource(resourceName);
+        if (stream == null) {
+            throw new IOException("Paket kaynagi bulunamadi: " + resourceName);
+        }
+        try (Reader reader = new InputStreamReader(
+                stream, StandardCharsets.UTF_8)) {
+            ItemNames loaded = ItemNames.load(reader);
+            if (loaded.keys().isEmpty()) {
+                throw new IOException(
+                    "Paket urun adi dosyasi bos: " + resourceName);
+            }
+            return loaded;
+        }
+    }
+
     private static final class Definitions {
         private final PluginSettings settings;
         private final Messages messages;
+        private final ItemNames itemNames;
         private final ParsedItems parsedItems;
         private final boolean successful;
 
         private Definitions(PluginSettings settings,
                             Messages messages,
+                            ItemNames itemNames,
                             ParsedItems parsedItems,
                             boolean successful) {
             this.settings = settings;
             this.messages = messages;
+            this.itemNames = itemNames;
             this.parsedItems = parsedItems;
             this.successful = successful;
         }

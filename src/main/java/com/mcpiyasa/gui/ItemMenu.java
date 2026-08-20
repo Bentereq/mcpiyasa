@@ -1,6 +1,7 @@
 package com.mcpiyasa.gui;
 
 import com.mcpiyasa.compat.Materials;
+import com.mcpiyasa.config.ItemNames;
 import com.mcpiyasa.config.Messages;
 import com.mcpiyasa.config.ParsedItems;
 import com.mcpiyasa.config.PluginSettings;
@@ -61,7 +62,25 @@ public final class ItemMenu {
             page = index < 0 ? 0 : index / Icons.PAGE_SIZE;
         }
         open(player, itemId, category, page, parsedItems, settings, messages,
-            marketService, change24hLookup);
+            ItemNames.empty(), marketService, change24hLookup);
+    }
+
+    public static void open(Player player, String itemId,
+                            ParsedItems parsedItems, PluginSettings settings,
+                            Messages messages, ItemNames itemNames,
+                            MarketService marketService,
+                            CategoryMenu.Change24hLookup change24hLookup) {
+        String category = parsedItems == null
+            ? null : parsedItems.itemCategory.get(itemId);
+        int page = 0;
+        if (parsedItems != null && category != null) {
+            List<String> categoryItems =
+                parsedItems.activeCategoryItems(category);
+            int index = categoryItems.indexOf(itemId);
+            page = index < 0 ? 0 : index / Icons.PAGE_SIZE;
+        }
+        open(player, itemId, category, page, parsedItems, settings, messages,
+            itemNames, marketService, change24hLookup);
     }
 
     public static void open(Player player, String itemId, String category,
@@ -69,40 +88,45 @@ public final class ItemMenu {
                             Messages messages, MarketService marketService,
                             CategoryMenu.Change24hLookup change24hLookup) {
         open(player, itemId, category, page, null, settings, messages,
-            marketService,
+            ItemNames.empty(), marketService,
             change24hLookup);
     }
 
     public static void open(Player player, String itemId, String category,
                             int page, ParsedItems parsedItems,
                             PluginSettings settings, Messages messages,
+                            ItemNames itemNames,
                             MarketService marketService,
                             CategoryMenu.Change24hLookup change24hLookup) {
         open(player, itemId, category, page, parsedItems, settings, messages,
-            marketService, change24hLookup,
+            itemNames, marketService, change24hLookup,
             category == null ? MenuType.MAIN : MenuType.CATEGORY);
     }
 
     static void openFromMovers(
             Player player, String itemId, String category, int page,
             ParsedItems parsedItems, PluginSettings settings,
-            Messages messages, MarketService marketService,
+            Messages messages, ItemNames itemNames,
+            MarketService marketService,
             CategoryMenu.Change24hLookup change24hLookup) {
         open(player, itemId, category, page, parsedItems, settings, messages,
-            marketService, change24hLookup, MenuType.MOVERS);
+            itemNames, marketService, change24hLookup, MenuType.MOVERS);
     }
 
     static void reopen(Player player, MenuHolder holder,
                        ParsedItems parsedItems, PluginSettings settings,
-                       Messages messages, MarketService marketService,
+                       Messages messages, ItemNames itemNames,
+                       MarketService marketService,
                        CategoryMenu.Change24hLookup change24hLookup) {
         open(player, holder.itemId, holder.category, holder.page, parsedItems,
-            settings, messages, marketService, change24hLookup, holder.origin);
+            settings, messages, itemNames, marketService, change24hLookup,
+            holder.origin);
     }
 
     private static void open(Player player, String itemId, String category,
                              int page, ParsedItems parsedItems,
                              PluginSettings settings, Messages messages,
+                             ItemNames itemNames,
                              MarketService marketService,
                              CategoryMenu.Change24hLookup change24hLookup,
                              MenuType origin) {
@@ -112,7 +136,7 @@ public final class ItemMenu {
             holder,
             SIZE,
             messages.get("gui.item-baslik", Collections.singletonMap(
-                "item", itemId)));
+                "item", itemNames.of(itemId))));
         holder.setInventory(inventory);
 
         Material itemMaterial = Materials.resolve(itemId);
@@ -164,7 +188,7 @@ public final class ItemMenu {
             sellAllName = messages.get("gui.satis-kapali");
         } else if (inventoryAmount == 0) {
             Map<String, String> emptyVars = Collections.singletonMap(
-                "item", itemId);
+                "item", itemNames.of(itemId));
             sellAllName = messages.get("gui.tumunu-sat-bos", emptyVars);
             sellAllLore.add(sellAllName);
         } else {

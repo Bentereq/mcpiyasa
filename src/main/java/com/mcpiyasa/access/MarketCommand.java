@@ -1,6 +1,7 @@
 package com.mcpiyasa.access;
 
 import com.mcpiyasa.compat.Materials;
+import com.mcpiyasa.config.ItemNames;
 import com.mcpiyasa.config.Messages;
 import com.mcpiyasa.config.ParsedItems;
 import com.mcpiyasa.config.PluginSettings;
@@ -37,6 +38,7 @@ public final class MarketCommand implements CommandExecutor, TabCompleter {
     private final ParsedItems parsedItems;
     private final PluginSettings settings;
     private final Messages messages;
+    private final ItemNames itemNames;
     private final PriceEngine engine;
     private final MarketService marketService;
     private AdminDelegate adminDelegate;
@@ -47,14 +49,26 @@ public final class MarketCommand implements CommandExecutor, TabCompleter {
                          Messages messages,
                          PriceEngine engine,
                          MarketService marketService) {
+        this(parsedItems, settings, messages, ItemNames.empty(), engine,
+            marketService);
+    }
+
+    public MarketCommand(ParsedItems parsedItems,
+                         PluginSettings settings,
+                         Messages messages,
+                         ItemNames itemNames,
+                         PriceEngine engine,
+                         MarketService marketService) {
         if (parsedItems == null || settings == null || messages == null
-                || engine == null || marketService == null) {
+                || itemNames == null || engine == null
+                || marketService == null) {
             throw new IllegalArgumentException(
                 "MarketCommand bagimliliklari null olamaz");
         }
         this.parsedItems = parsedItems;
         this.settings = settings;
         this.messages = messages;
+        this.itemNames = itemNames;
         this.engine = engine;
         this.marketService = marketService;
     }
@@ -177,7 +191,8 @@ public final class MarketCommand implements CommandExecutor, TabCompleter {
         try {
             ItemDef item = parsedItems.items.get(itemId);
             player.sendMessage(messages.chat(
-                "gui.item-baslik", singletonVar("item", itemId)));
+                "gui.item-baslik", singletonVar(
+                    "item", itemNames.of(itemId))));
             sendDirectionPrice(player, item, TradeSide.BUY);
             sendDirectionPrice(player, item, TradeSide.SELL);
         } catch (IllegalArgumentException ignored) {
@@ -301,7 +316,8 @@ public final class MarketCommand implements CommandExecutor, TabCompleter {
 
     private void sendUnknownItem(CommandSender sender, String rawItem) {
         sender.sendMessage(messages.chat(
-            "islem.bilinmeyen-item", singletonVar("item", rawItem)));
+            "islem.bilinmeyen-item", singletonVar(
+                "item", itemNames.of(rawItem))));
     }
 
     private void sendUsage(CommandSender sender, Command command) {

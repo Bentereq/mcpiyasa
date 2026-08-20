@@ -3,6 +3,7 @@ package com.mcpiyasa.access;
 import com.mcpiyasa.compat.Materials;
 import com.mcpiyasa.compat.SignCompat;
 import com.mcpiyasa.compat.Text;
+import com.mcpiyasa.config.ItemNames;
 import com.mcpiyasa.config.Messages;
 import com.mcpiyasa.config.ParsedItems;
 import com.mcpiyasa.config.PluginSettings;
@@ -37,25 +38,36 @@ public final class SignShopListener implements Listener {
     private final ParsedItems parsedItems;
     private final PluginSettings settings;
     private final Messages messages;
+    private final ItemNames itemNames;
     private final MarketService marketService;
     private final CategoryMenu.Change24hLookup change24hLookup;
 
     public SignShopListener(ParsedItems parsedItems, PluginSettings settings,
                             Messages messages, MarketService marketService) {
-        this(parsedItems, settings, messages, marketService, null);
+        this(parsedItems, settings, messages, ItemNames.empty(), marketService,
+            null);
     }
 
     public SignShopListener(ParsedItems parsedItems, PluginSettings settings,
                             Messages messages, MarketService marketService,
                             CategoryMenu.Change24hLookup change24hLookup) {
+        this(parsedItems, settings, messages, ItemNames.empty(), marketService,
+            change24hLookup);
+    }
+
+    public SignShopListener(ParsedItems parsedItems, PluginSettings settings,
+                            Messages messages, ItemNames itemNames,
+                            MarketService marketService,
+                            CategoryMenu.Change24hLookup change24hLookup) {
         if (parsedItems == null || settings == null || messages == null
-                || marketService == null) {
+                || itemNames == null || marketService == null) {
             throw new IllegalArgumentException(
                 "SignShopListener bagimliliklari null olamaz");
         }
         this.parsedItems = parsedItems;
         this.settings = settings;
         this.messages = messages;
+        this.itemNames = itemNames;
         this.marketService = marketService;
         this.change24hLookup = change24hLookup;
     }
@@ -79,7 +91,7 @@ public final class SignShopListener implements Listener {
                 ? "" : event.getLine(1).trim();
             event.getPlayer().sendMessage(messages.chat(
                 "islem.bilinmeyen-item",
-                Collections.singletonMap("item", rawItem)));
+                Collections.singletonMap("item", itemNames.of(rawItem))));
             return;
         }
         if (isInactive(itemId)) {
@@ -87,7 +99,8 @@ public final class SignShopListener implements Listener {
             event.setCancelled(true);
             event.getPlayer().sendMessage(
                 messages.chat("islem.urun-devre-disi",
-                    Collections.singletonMap("item", itemId)));
+                    Collections.singletonMap(
+                        "item", itemNames.of(itemId))));
             return;
         }
 
@@ -105,7 +118,7 @@ public final class SignShopListener implements Listener {
         }
 
         event.setLine(0, Text.color("&1[Market]"));
-        event.setLine(1, itemId);
+        event.setLine(1, itemNames.of(itemId));
         event.setLine(2, directionLine(itemId, TradeSide.BUY, buy));
         event.setLine(3, directionLine(itemId, TradeSide.SELL, sell));
     }
@@ -141,7 +154,8 @@ public final class SignShopListener implements Listener {
         String rawItem = SignCompat.getLine(sign, 1);
         String itemId = canonicalItemId(SignParser.parse(header, rawItem));
         if (itemId == null) {
-            invalidateDeadSign(sign, event.getPlayer(), messages, rawItem);
+            invalidateDeadSign(
+                sign, event.getPlayer(), messages, itemNames, rawItem);
             return;
         }
         if (!event.getPlayer().hasPermission("mcpiyasa.use")) {
@@ -152,7 +166,8 @@ public final class SignShopListener implements Listener {
             // Devre disi urun: bilinmeyen item gibi, menu acilmaz.
             event.getPlayer().sendMessage(
                 messages.chat("islem.urun-devre-disi",
-                    Collections.singletonMap("item", itemId)));
+                    Collections.singletonMap(
+                        "item", itemNames.of(itemId))));
             return;
         }
 
@@ -169,20 +184,29 @@ public final class SignShopListener implements Listener {
         }
 
         SignCompat.setLine(
+            sign, 1, itemNames.of(itemId));
+        SignCompat.setLine(
             sign, 2, directionLine(itemId, TradeSide.BUY, buy));
         SignCompat.setLine(
             sign, 3, directionLine(itemId, TradeSide.SELL, sell));
         sign.update();
         ItemMenu.open(
             event.getPlayer(), itemId, parsedItems, settings, messages,
-            marketService, change24hLookup);
+            itemNames, marketService, change24hLookup);
     }
 
     static void invalidateDeadSign(Sign sign, org.bukkit.entity.Player player,
                                    Messages messages, String rawItem) {
+        invalidateDeadSign(
+            sign, player, messages, ItemNames.empty(), rawItem);
+    }
+
+    static void invalidateDeadSign(Sign sign, org.bukkit.entity.Player player,
+                                   Messages messages, ItemNames itemNames,
+                                   String rawItem) {
         player.sendMessage(messages.chat(
             "islem.bilinmeyen-item", Collections.singletonMap(
-                "item", rawItem == null ? "" : rawItem.trim())));
+                "item", itemNames.of(rawItem))));
         SignCompat.setLine(sign, 2, "");
         SignCompat.setLine(sign, 3, "");
         sign.update();
@@ -196,11 +220,19 @@ public final class SignShopListener implements Listener {
 
     private String canonicalItemId(String parsedItemId) {
         Material material = Materials.resolve(parsedItemId);
-        if (material == null
-                || !parsedItems.items.containsKey(material.name())) {
-            return null;
+        if (material != null
+                && parsedItems.items.containsKey(material.name())) {
+            return material.name();
         }
-        return material.name();
+        if (parsedItemId != null) {
+            String visibleName = parsedItemId.trim();
+            for (String itemId : parsedItems.items.keySet()) {
+                if (itemNames.of(itemId).equalsIgnoreCase(visibleName)) {
+                    return itemId;
+                }
+            }
+        }
+        return null;
     }
 
     private String priceLine(String key, double price) {

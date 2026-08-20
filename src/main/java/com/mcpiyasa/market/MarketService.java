@@ -2,6 +2,7 @@ package com.mcpiyasa.market;
 
 import com.mcpiyasa.api.events.MarketPriceChangeEvent;
 import com.mcpiyasa.api.events.MarketTradeEvent;
+import com.mcpiyasa.config.ItemNames;
 import com.mcpiyasa.config.ParsedItems;
 import com.mcpiyasa.config.PluginSettings;
 import com.mcpiyasa.diag.SafeMode;
@@ -34,6 +35,7 @@ public final class MarketService {
     private final PriceEngine engine;
     private final Map<String, ItemDef> items;
     private final PluginSettings settings;
+    private final ItemNames itemNames;
     private final SignalTracker signalTracker;
     private final SafeMode safeMode;
     private final EconomyBridge economy;
@@ -123,16 +125,52 @@ public final class MarketService {
                          TradePersistenceRepo tradePersistenceRepo,
                          Logger logger,
                          Runnable safeModeNotification) {
+        this(
+            engine,
+            parsedItems,
+            settings,
+            signalTracker,
+            safeMode,
+            economy,
+            inventory,
+            clock,
+            preHook,
+            asyncWriter,
+            txLogRepo,
+            tradePersistenceRepo,
+            logger,
+            safeModeNotification,
+            ItemNames.empty()
+        );
+    }
+
+    public MarketService(PriceEngine engine,
+                         ParsedItems parsedItems,
+                         PluginSettings settings,
+                         SignalTracker signalTracker,
+                         SafeMode safeMode,
+                         EconomyBridge economy,
+                         InventoryBridge inventory,
+                         Clock clock,
+                         TradePreHook preHook,
+                         AsyncWriter asyncWriter,
+                         TxLogRepo txLogRepo,
+                         TradePersistenceRepo tradePersistenceRepo,
+                         Logger logger,
+                         Runnable safeModeNotification,
+                         ItemNames itemNames) {
         if (engine == null || parsedItems == null || settings == null
                 || signalTracker == null || safeMode == null || economy == null
                 || inventory == null || clock == null || asyncWriter == null
                 || txLogRepo == null || tradePersistenceRepo == null
-                || logger == null || safeModeNotification == null) {
+                || logger == null || safeModeNotification == null
+                || itemNames == null) {
             throw new IllegalArgumentException("MarketService bagimliliklari null olamaz");
         }
         this.engine = engine;
         this.items = new LinkedHashMap<String, ItemDef>(parsedItems.items);
         this.settings = settings;
+        this.itemNames = itemNames;
         this.signalTracker = signalTracker;
         this.safeMode = safeMode;
         this.economy = economy;
@@ -224,7 +262,7 @@ public final class MarketService {
                 null,
                 null,
                 "islem.bilinmeyen-item",
-                singleVar("item", String.valueOf(itemId))
+                singleVar("item", itemNames.of(itemId))
             );
         }
         // Devre disi urun: yon bayraklariyla ayni choke point'te reddedilir,
@@ -234,7 +272,7 @@ public final class MarketService {
                 null,
                 null,
                 "islem.urun-devre-disi",
-                singleVar("item", item.id)
+                singleVar("item", itemNames.of(item.id))
             );
         }
         if (amount <= 0) {
@@ -257,7 +295,7 @@ public final class MarketService {
                 null,
                 side == TradeSide.BUY
                     ? "islem.alis-kapali" : "islem.satis-kapali",
-                singleVar("item", item.id)
+                singleVar("item", itemNames.of(item.id))
             );
         }
 
@@ -482,10 +520,10 @@ public final class MarketService {
         }
     }
 
-    private static Map<String, String> quoteVars(Quote quote) {
+    private Map<String, String> quoteVars(Quote quote) {
         Map<String, String> vars = new LinkedHashMap<String, String>();
         vars.put("adet", String.valueOf(quote.amount));
-        vars.put("item", quote.itemId);
+        vars.put("item", itemNames.of(quote.itemId));
         vars.put(
             "tutar",
             String.format(Locale.ROOT, "%.2f", Money.round(quote.totalPrice))

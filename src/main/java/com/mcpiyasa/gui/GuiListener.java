@@ -1,6 +1,7 @@
 package com.mcpiyasa.gui;
 
 import com.mcpiyasa.config.CategoryDef;
+import com.mcpiyasa.config.ItemNames;
 import com.mcpiyasa.config.Messages;
 import com.mcpiyasa.config.ParsedItems;
 import com.mcpiyasa.config.PluginSettings;
@@ -48,6 +49,7 @@ public final class GuiListener implements Listener {
     private final ParsedItems parsedItems;
     private final PluginSettings settings;
     private final Messages messages;
+    private final ItemNames itemNames;
     private final PriceEngine engine;
     private final MarketService marketService;
     private final CategoryMenu.Change24hLookup change24hLookup;
@@ -92,9 +94,21 @@ public final class GuiListener implements Listener {
                        CategoryMenu.Change24hLookup change24hLookup,
                        MenuScheduler menuScheduler,
                        AdminGuiHost adminHost) {
+        this(parsedItems, settings, messages, ItemNames.empty(), engine,
+            marketService, change24hLookup, menuScheduler, adminHost);
+    }
+
+    public GuiListener(ParsedItems parsedItems, PluginSettings settings,
+                       Messages messages, ItemNames itemNames,
+                       PriceEngine engine,
+                       MarketService marketService,
+                       CategoryMenu.Change24hLookup change24hLookup,
+                       MenuScheduler menuScheduler,
+                       AdminGuiHost adminHost) {
         this.parsedItems = parsedItems;
         this.settings = settings;
         this.messages = messages;
+        this.itemNames = itemNames == null ? ItemNames.empty() : itemNames;
         this.engine = engine;
         this.marketService = marketService;
         this.change24hLookup = change24hLookup;
@@ -177,7 +191,7 @@ public final class GuiListener implements Listener {
                     }
                     MoversMenu.open(
                         player, parsedItems, settings, messages,
-                        change24hLookup);
+                        itemNames, change24hLookup);
                 }
             });
             return;
@@ -205,8 +219,8 @@ public final class GuiListener implements Listener {
                         }
                         ItemMenu.open(
                             player, itemId, holder.category, holder.page,
-                            parsedItems, settings, messages, marketService,
-                            change24hLookup);
+                            parsedItems, settings, messages, itemNames,
+                            marketService, change24hLookup);
                     }
                 });
             }
@@ -238,7 +252,7 @@ public final class GuiListener implements Listener {
                         }
                         MoversMenu.open(
                             player, parsedItems, settings, messages,
-                            change24hLookup);
+                            itemNames, change24hLookup);
                     }
                 });
             } else if (holder.category == null) {
@@ -257,7 +271,7 @@ public final class GuiListener implements Listener {
                 && ItemMenu.inventoryCount(player, holder.itemId) == 0) {
             ItemDef item = parsedItems.items.get(holder.itemId);
             Map<String, String> vars = new LinkedHashMap<String, String>();
-            vars.put("item", holder.itemId);
+            vars.put("item", itemNames.of(holder.itemId));
             vars.put("adet", "1");
             player.sendMessage(messages.chat(
                 ItemMenu.sellAllBosMesajAnahtari(item, player, holder.itemId),
@@ -284,7 +298,7 @@ public final class GuiListener implements Listener {
                 }
                 ItemMenu.reopen(
                     player, holder, parsedItems, settings, messages,
-                    marketService, change24hLookup);
+                    itemNames, marketService, change24hLookup);
             }
         });
     }
@@ -311,7 +325,7 @@ public final class GuiListener implements Listener {
                 }
                 ItemMenu.openFromMovers(
                     player, itemId, category, page, parsedItems, settings,
-                    messages, marketService, change24hLookup);
+                    messages, itemNames, marketService, change24hLookup);
             }
         });
     }

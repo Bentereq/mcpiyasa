@@ -1,6 +1,7 @@
 package com.mcpiyasa.gui;
 
 import com.mcpiyasa.compat.Materials;
+import com.mcpiyasa.config.ItemNames;
 import com.mcpiyasa.config.Messages;
 import com.mcpiyasa.config.ParsedItems;
 import com.mcpiyasa.engine.GroupDef;
@@ -32,6 +33,7 @@ public final class AdminItemMenu {
                             int page, String itemId, boolean confirmRemove) {
         ParsedItems items = host.items();
         Messages messages = host.messages();
+        ItemNames itemNames = host.itemNames();
         MarketService marketService = host.marketService();
         ItemDef item = items.items.get(itemId);
         GroupDef group = item == null ? null : items.groups.get(item.groupId);
@@ -42,7 +44,7 @@ public final class AdminItemMenu {
             holder,
             AdminLayout.ITEM_SIZE,
             messages.get("admin-gui.item-baslik", Collections.singletonMap(
-                "item", itemId)));
+                "item", itemNames.of(itemId))));
         holder.setInventory(inventory);
 
         Material material = Materials.resolve(itemId);
@@ -111,6 +113,7 @@ public final class AdminItemMenu {
             return icon;
         }
         List<String> lore = new ArrayList<String>();
+        lore.add(itemId);
         if (item != null && group != null) {
             lore.add(messages.get("admin-gui.taban-fiyat",
                 Collections.singletonMap(

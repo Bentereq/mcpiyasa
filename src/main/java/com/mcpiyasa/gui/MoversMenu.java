@@ -1,6 +1,7 @@
 package com.mcpiyasa.gui;
 
 import com.mcpiyasa.compat.Materials;
+import com.mcpiyasa.config.ItemNames;
 import com.mcpiyasa.config.Messages;
 import com.mcpiyasa.config.ParsedItems;
 import com.mcpiyasa.config.PluginSettings;
@@ -30,6 +31,7 @@ public final class MoversMenu {
 
     public static void open(Player player, ParsedItems parsedItems,
                             PluginSettings settings, Messages messages,
+                            ItemNames itemNames,
                             CategoryMenu.Change24hLookup change24hLookup) {
         if (!settings.kriptoGosterim) {
             return;
@@ -60,13 +62,14 @@ public final class MoversMenu {
         for (int index = 0;
                 index < Math.min(GAINERS_LIMIT, descending.size()); index++) {
             inventory.setItem(index, icon(
-                descending.get(index), messages));
+                descending.get(index), messages, itemNames));
         }
 
         int loserCount = loserCount(descending.size());
         for (int rank = 0; rank < loserCount; rank++) {
             inventory.setItem(Icons.loserSlot(rank), icon(
-                descending.get(descending.size() - 1 - rank), messages));
+                descending.get(descending.size() - 1 - rank), messages,
+                itemNames));
         }
         inventory.setItem(BACK_SLOT, named(
             Material.BARRIER, messages.get("gui.geri")));
@@ -125,7 +128,8 @@ public final class MoversMenu {
         return changes;
     }
 
-    private static ItemStack icon(ChangeEntry entry, Messages messages) {
+    private static ItemStack icon(ChangeEntry entry, Messages messages,
+                                  ItemNames itemNames) {
         Material material = Materials.resolve(entry.itemId);
         if (material == null) {
             material = Material.STONE;
@@ -133,6 +137,7 @@ public final class MoversMenu {
         ItemStack icon = new ItemStack(material);
         ItemMeta meta = icon.getItemMeta();
         if (meta != null) {
+            meta.setDisplayName(itemNames.of(entry.itemId));
             meta.setLore(Collections.singletonList(messages.get(
                 "gui.degisim-24s",
                 Collections.singletonMap(

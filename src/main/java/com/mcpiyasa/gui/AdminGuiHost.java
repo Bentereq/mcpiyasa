@@ -1,5 +1,6 @@
 package com.mcpiyasa.gui;
 
+import com.mcpiyasa.config.ItemNames;
 import com.mcpiyasa.config.Messages;
 import com.mcpiyasa.config.ParsedItems;
 import com.mcpiyasa.config.PluginSettings;
@@ -18,6 +19,8 @@ public interface AdminGuiHost {
     PluginSettings settings();
 
     Messages messages();
+
+    ItemNames itemNames();
 
     MarketService marketService();
 
