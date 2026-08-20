@@ -1,0 +1,34 @@
+# MCPiyasa yapılandırması. Her değerin işlevi ve geçerli aralığı yanında yazar.
+dil: tr                      # tr | en
+motor:
+  spread: 0.10               # Sonlu 0.02..1; ~%1.7 altı çapraz-ağırlık konvekslik arbitrajı açabilir.
+  toparlanma-katsayisi: 0.05 # Sonlu 0..1; her tikte stoğun tabana yaklaşma oranı, 0 kapalı.
+  toparlanma-dakika: 10      # Tam sayı >=1; toparlanma tikleri arasındaki dakika.
+  anormallik-ussu: 0.5       # Sonlu >=0; hacim anormalliği etkisi, 0 nötr.
+  anormallik-bant: [0.5, 3.0] # İki sonlu pozitif sayı; alt < üst.
+  hhi-etki: 1.0              # Sonlu >=0; satıcı yoğunlaşması etkisi, 0 kapalı.
+  esneklik-bant: [0.25, 1.5] # İki sonlu pozitif sayı; alt < üst.
+  esneklik-taban: 0.6        # Sonlu; esneklik-bant içinde olmalı.
+  referans-gunluk-hacim: 2000 # Sonlu >0; öz-kalibrasyon referansı (birim/gün).
+  fiyat-bant: [0.25, 4.0]    # İki sonlu pozitif sayı; alt < üst; orta fiyat bandı.
+  max-islem-adet: 2304       # Tam sayı 1..100000; tek işlemde azami adet.
+  max-taban-fiyat: 1000000000 # Sonlu >0; bir taban fiyatın (grup/bağımsız item) aşamayacağı tavan; cent birikiminde long taşmasını önler.
+  varsayilan-taban-stok: 20000 # Sonlu >0; ürün/grup varsayılan sanal stoğu.
+  # Fiyatın işlem hacmine ne kadar SERT tepki vereceğini ayarlayan küresel çarpan (sonlu >0).
+  # DÜŞÜK = sakin/yavaş fiyat; büyük/kalabalık sunucular için iyidir (fiyatlar az oynar).
+  # YÜKSEK = hassas/hızlı fiyat; küçük sunucularda az işlemle bile fiyat hareket eder.
+  # Örnek: 0.3 = çok kalabalık sunucu, 1.0 = varsayılan (fiyatlar birebir aynı), 2.0 = küçük sunucu.
+  # Tüm grupları eşit ölçeklediği için başlangıç fiyatlarını DEĞİŞTİRMEZ ve asla arbitraj açmaz; yalnızca tepki HIZINI değiştirir.
+  # Çalışan sunucuda değeri değiştirmek eğriyi yeniden ölçekler; kayıtlı stok reload/restart sırasında otomatik olarak fiyatı koruyacak şekilde yeniden ölçeklenir.
+  hassasiyet: 1.0
+  profil-alpha: 0.3          # Sonlu 0<alpha<=1; saat profili EMA katsayısı.
+  profil-isinma-slot: 3      # Tam sayı >=1; bu gözlem sayısına kadar anormallik nötr.
+ozellikler:
+  kripto-gosterim: false     # true|false; 24s değişim, trend oku ve hareketliler.
+  komut-ticaret: false       # true|false; /market al|sat <item> <adet>.
+  tabela-market: false       # true|false; [Market] tabelaları.
+  npc-market: false          # true|false; Citizens kuruluysa NPC erişimi.
+  creative-ticaret: true     # true|false; varsayılan izin verir, sahip isterse false ile creative modu kapatır.
+  admin-komut: true          # true|false; /market admin METİN alt komutları (liste, durum, fiyat...). false ise sadece tıklanabilir admin menüsü kullanılır; /market admin her zaman menüyü açar.
+guvenli-mod:
+  zorla-calistir: false      # true|false; teşhis hatasını aşar, risk yöneticiye aittir.

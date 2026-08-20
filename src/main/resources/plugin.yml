@@ -1,0 +1,21 @@
+name: MCPiyasa
+main: com.mcpiyasa.MCPiyasaPlugin
+version: '${project.version}'
+api-version: '1.16'
+author: tereq
+description: Dinamik fiyatli market - arz/talebe gore gercek zamanli fiyat.
+website: https://github.com/Bentereq/mcpiyasa
+depend: [Vault]
+softdepend: [PlaceholderAPI, Citizens]
+commands:
+  market:
+    description: Market menusu
+    usage: '/market (GUI acar) - fiyat <item> | al/sat <item> <adet> | admin (yonetim menusu) | admin aktif <item> <ac|kapa>'
+    aliases: [pazar, piyasa]
+permissions:
+  mcpiyasa.use:
+    description: Market GUI, fiyat, tabela, NPC ve acik komut ticareti erisimi.
+    default: true
+  mcpiyasa.admin:
+    description: Yonetim komutlari, market tabelasi olusturma ve guvenli mod uyarilari.
+    default: op

@@ -1,0 +1,222 @@
+# MCPiyasa varsayılan fiyat listesi: 151 item anahtarı.
+# Sayım yöntemi: rg '^  [A-Z0-9_]+:' src/main/resources/items.yml
+# Fiyatlar vanilla survival birim başına edinim zorluğu başlangıç tahminidir.
+# Hasat verimleri Java Edition 1.21 crop/loot tablolarına göre brüt ve yeniden
+# dikim sonrası net olarak not edilir; Fortune gibi bonuslar hesaba katılmaz.
+# Deterministik işleme akrabaları tarif kütlesiyle aynı grubu paylaşır; çok
+# girdili çevrim riskli çıktıların satış yönü kapalıdır. Yönetici değerleri değiştirebilir.
+# Sürümde olmayan item'lar otomatik atlanır; yapılandırma hataları teşhise girer.
+
+kategoriler:
+  madenler:  { ikon: IRON_PICKAXE, sira: 1 }
+  tarim:     { ikon: WHEAT, sira: 2 }
+  mob:       { ikon: BONE, sira: 3 }
+  yapi:      { ikon: BRICKS, sira: 4 }
+  nether-end: { ikon: NETHERRACK, sira: 5 }
+  nadir:     { ikon: NETHER_STAR, sira: 6 }
+
+gruplar:
+  # Deterministik tarif akrabaları aynı stok grubunu kullanır; ağırlık,
+  # tarifteki ortak ham madde kütlesidir.
+  komur:     { taban-fiyat: 2.0,   taban-stok: 20000 }
+  demir:     { taban-fiyat: 10.0,  taban-stok: 15000 }
+  bakir:     { taban-fiyat: 3.0,   taban-stok: 20000 }   # Minecraft 1.17+
+  altin:     { taban-fiyat: 15.0,  taban-stok: 8000 }
+  lapis:     { taban-fiyat: 2.5,   taban-stok: 10000 }   # Çoklu düşürme kaba denge ortalaması ~6/cevher.
+  redstone:  { taban-fiyat: 2.0,   taban-stok: 15000 }   # Çoklu düşürme kaba denge ortalaması ~4.5/cevher.
+  elmas:     { taban-fiyat: 120.0, taban-stok: 2000 }
+  zumrut:    { taban-fiyat: 60.0,  taban-stok: 2000 }
+  kuvars:    { taban-fiyat: 4.0,   taban-stok: 10000 }
+  netherite: { taban-fiyat: 3400.0, taban-stok: 150 }    # 4 scrap + 4 altın + işleme.
+  slime:     { taban-fiyat: 4.0,   taban-stok: 6000 }
+  kemik:     { taban-fiyat: 0.5,   taban-stok: 10000 }   # Kolay farm; grup tabanı düştü, üye ağırlık oranları (BONE 1, BONE_MEAL 1/3, BONE_BLOCK 3) sabit.
+  bugday:    { taban-fiyat: 1.2,   taban-stok: 30000 }
+  kavun:     { taban-fiyat: 0.3,   taban-stok: 40000 }
+  kelp:      { taban-fiyat: 0.2,   taban-stok: 60000 }
+  deri:      { taban-fiyat: 0.45,  taban-stok: 12000 }   # Kolay farm; grup tabanı düştü, LEATHER (ağırlık 4) 1.80, RABBIT_HIDE (ağırlık 1) 0.45 oran sabit.
+  ip-yun:    { taban-fiyat: 0.375, taban-stok: 20000 }
+  ahsap:     { taban-fiyat: 1.50,  taban-stok: 215000 } # Tüm log/stem + plank/çubuk/bambu tek havuzda; stok eski log gruplarının toplamı.
+  glowstone: { taban-fiyat: 1.2,   taban-stok: 12000 }   # Blok 2-4 toz düşürür; grup tarif kütlesi 4.
+  seker-kamisi: { taban-fiyat: 0.8, taban-stok: 30000 }
+  blaze:     { taban-fiyat: 4.0,   taban-stok: 10000 }
+  cakil:     { taban-fiyat: 0.5,   taban-stok: 40000 }
+  tas:       { taban-fiyat: 0.40,  taban-stok: 170000 } # Çakmaktaşı hariç bütün taş ailesi tek havuzda.
+  deepslate: { taban-fiyat: 0.50,  taban-stok: 80000 }  # 1.17+; kaba/işlenmiş derin arduvaz tek havuzda.
+  patates:   { taban-fiyat: 0.8,   taban-stok: 30000 }
+  domuz-eti: { taban-fiyat: 1.5,   taban-stok: 15000 }
+  sigir-eti: { taban-fiyat: 1.5,   taban-stok: 15000 }
+  tavuk-eti: { taban-fiyat: 1.2,   taban-stok: 15000 }
+  koyun-eti: { taban-fiyat: 1.2,   taban-stok: 15000 }
+  morina:    { taban-fiyat: 1.0,   taban-stok: 15000 }
+  somon:     { taban-fiyat: 1.2,   taban-stok: 15000 }
+  kum-cam:   { taban-fiyat: 0.5,   taban-stok: 50000 }
+  kil-tugla: { taban-fiyat: 0.8,   taban-stok: 35000 }   # Kil topu/tuğla/tuğla bloğu + terrakota tek havuzda.
+  dripstone: { taban-fiyat: 0.375, taban-stok: 30000 }   # 4 sivri damlataş -> 1 blok.
+  chorus-purpur: { taban-fiyat: 1.2, taban-stok: 15000 }
+
+itemler:
+  # --- madenler ---
+  COAL:            { grup: komur,    agirlik: 1, kategori: madenler }
+  COAL_BLOCK:      { grup: komur,    agirlik: 9, kategori: madenler }
+  IRON_NUGGET:     { grup: demir,    agirlik: 0.1111111111111111, kategori: madenler }
+  IRON_INGOT:      { grup: demir,    agirlik: 1, kategori: madenler }
+  IRON_BLOCK:      { grup: demir,    agirlik: 9, kategori: madenler }
+  COPPER_INGOT:    { grup: bakir,    agirlik: 1, kategori: madenler }   # Minecraft 1.17+
+  COPPER_BLOCK:    { grup: bakir,    agirlik: 9, kategori: madenler }   # Minecraft 1.17+
+  GOLD_NUGGET:     { grup: altin,    agirlik: 0.1111111111111111, kategori: madenler }
+  GOLD_INGOT:      { grup: altin,    agirlik: 1, kategori: madenler }
+  GOLD_BLOCK:      { grup: altin,    agirlik: 9, kategori: madenler }
+  LAPIS_LAZULI:    { grup: lapis,    agirlik: 1, kategori: madenler }
+  LAPIS_BLOCK:     { grup: lapis,    agirlik: 9, kategori: madenler }
+  REDSTONE:        { grup: redstone, agirlik: 1, kategori: madenler }
+  REDSTONE_BLOCK:  { grup: redstone, agirlik: 9, kategori: madenler }
+  DIAMOND:         { grup: elmas,    agirlik: 1, kategori: madenler }
+  DIAMOND_BLOCK:   { grup: elmas,    agirlik: 9, kategori: madenler }
+  EMERALD:         { grup: zumrut,   agirlik: 1, kategori: madenler }
+  EMERALD_BLOCK:   { grup: zumrut,   agirlik: 9, kategori: madenler }
+  QUARTZ:          { grup: kuvars,   agirlik: 1, min-fiyat: 2.00, kategori: madenler } # Granit/diyorit tarif girdisi; taban altı alış kapalı çevrim açmasın.
+  QUARTZ_BLOCK:    { grup: kuvars,   agirlik: 4, kategori: madenler }
+  NETHERITE_SCRAP: { taban-fiyat: 800.0, taban-stok: 400, kategori: madenler }
+  NETHERITE_INGOT: { grup: netherite, agirlik: 1, satis-acik: false, kategori: madenler } # 4 scrap + 4 altın; çok girdili çıktı.
+  NETHERITE_BLOCK: { grup: netherite, agirlik: 9, satis-acik: false, kategori: madenler } # 36 scrap + 36 altın bileşiği; blok satışı kapalı, scrap satışı açık.
+  AMETHYST_SHARD:  { taban-fiyat: 6.0, taban-stok: 8000, kategori: madenler } # Minecraft 1.17+; ortalama 4/blok.
+  OBSIDIAN:        { taban-fiyat: 8.0, taban-stok: 5000, kategori: madenler }
+  FLINT:           { grup: cakil, agirlik: 1, min-fiyat: 0.50, kategori: madenler } # Ok girdisi; taban altı market alışı kapalı çevrim açmasın.
+
+  # --- tarım ---
+  WHEAT:           { grup: bugday,  agirlik: 1, kategori: tarim }
+  HAY_BLOCK:       { grup: bugday,  agirlik: 9, kategori: tarim }
+  WHEAT_SEEDS:     { taban-fiyat: 0.10, taban-stok: 40000, kategori: tarim } # Hasat verimi 1-3.
+  CARROT:          { taban-fiyat: 0.80, taban-stok: 30000, kategori: tarim } # JE 1.21: brüt 2-5 (ort 3.5), yeniden dikim sonrası net ort 2.5.
+  POTATO:          { grup: patates, agirlik: 1, kategori: tarim } # JE 1.21: brüt 2-5 (ort 3.5), yeniden dikim sonrası net ort 2.5.
+  BAKED_POTATO:    { grup: patates, agirlik: 1, kategori: tarim } # 1 patates -> 1 ürün; aynı tarif kütlesi.
+  BEETROOT:        { taban-fiyat: 1.00, taban-stok: 20000, kategori: tarim } # Hasat verimi 1.
+  BREAD:           { grup: bugday, agirlik: 3, kategori: tarim } # 3 buğday -> 1 ekmek; ağırlık 3.
+  SUGAR_CANE:      { grup: seker-kamisi, agirlik: 1, kategori: tarim }
+  SUGAR:           { grup: seker-kamisi, agirlik: 1, kategori: tarim }
+  PAPER:           { grup: seker-kamisi, agirlik: 1, kategori: tarim }
+  MELON_SLICE:     { grup: kavun, agirlik: 1, kategori: tarim } # Blok kırımı 3-7 dilim; craft kütlesi dilim başına 1.
+  MELON:           { grup: kavun, agirlik: 9, kategori: tarim } # 9 dilim -> 1 blok.
+  PUMPKIN:         { taban-fiyat: 1.50, taban-stok: 15000, kategori: tarim }
+  CACTUS:          { taban-fiyat: 0.80, taban-stok: 20000, kategori: tarim }
+  BAMBOO:          { grup: ahsap, agirlik: 0.0625, kategori: tarim } # 2 bambu -> 1 çubuk.
+  COCOA_BEANS:     { taban-fiyat: 1.00, taban-stok: 15000, kategori: tarim } # JE 1.21 olgun kapsül: brüt 3, yeniden dikim sonrası net 2.
+  NETHER_WART:     { taban-fiyat: 1.50, taban-stok: 15000, kategori: tarim } # JE 1.21 olgun: brüt 2-4 (ort 3), yeniden dikim sonrası net ort 2.
+  SWEET_BERRIES:   { taban-fiyat: 0.50, taban-stok: 20000, kategori: tarim } # JE 1.21 olgun çalı: brüt/net 2-3 (ort 2.5); yeniden dikim yok.
+  GLOW_BERRIES:    { taban-fiyat: 1.00, taban-stok: 15000, kategori: tarim } # Minecraft 1.17+
+  APPLE:           { taban-fiyat: 2.00, taban-stok: 10000, kategori: tarim } # Yaprak düşürme şansı düşük.
+  KELP:            { grup: kelp, agirlik: 1, kategori: tarim }
+  DRIED_KELP:      { grup: kelp, agirlik: 1, kategori: tarim }
+  EGG:             { taban-fiyat: 0.50, taban-stok: 20000, kategori: tarim }
+  HONEY_BOTTLE:    { grup: seker-kamisi, agirlik: 3, kategori: tarim } # 1 şişe bal -> 3 şeker; boş şişe hesaba katılmaz.
+  HONEYCOMB:       { taban-fiyat: 2.50, taban-stok: 8000,  kategori: tarim }
+  RED_MUSHROOM:    { taban-fiyat: 0.80, taban-stok: 15000, kategori: tarim }
+  BROWN_MUSHROOM:  { taban-fiyat: 0.80, taban-stok: 15000, kategori: tarim }
+
+  # --- mob düşürmeleri ---
+  ROTTEN_FLESH:    { taban-fiyat: 0.30, taban-stok: 30000, kategori: mob } # 0-2, ortalama 1.
+  BONE:            { grup: kemik, agirlik: 1, kategori: mob }              # 0-2, ortalama 1.
+  BONE_MEAL:       { grup: kemik, agirlik: 0.3333333333333333, kategori: mob }
+  BONE_BLOCK:      { grup: kemik, agirlik: 3, kategori: mob }
+  STRING:          { grup: ip-yun, agirlik: 1, kategori: mob } # 4 ip -> 1 beyaz yün.
+  SPIDER_EYE:      { taban-fiyat: 0.60, taban-stok: 15000, kategori: mob } # Kolay farm; fiyat düşürüldü.
+  GUNPOWDER:       { taban-fiyat: 1.80, taban-stok: 12000, kategori: mob } # 0-2, ortalama 1; kolay farm, fiyat düşürüldü.
+  ENDER_PEARL:     { taban-fiyat: 12.0, taban-stok: 6000,  kategori: mob }
+  BLAZE_ROD:       { grup: blaze, agirlik: 2, kategori: mob } # 0-1, ortalama 0.5.
+  BLAZE_POWDER:    { grup: blaze, agirlik: 1, kategori: mob }
+  SLIME_BALL:      { grup: slime, agirlik: 1, kategori: mob }
+  SLIME_BLOCK:     { grup: slime, agirlik: 9, kategori: mob }
+  LEATHER:         { grup: deri, agirlik: 4, kategori: mob } # 4 tavşan derisi -> 1 deri.
+  FEATHER:         { taban-fiyat: 0.70, taban-stok: 15000, min-fiyat: 0.70, kategori: mob } # Kolay farm; düşürüldü. Taban 0.70'te tutuldu: ARROW çevrimini açmamak için ok girdisi tabanı budur.
+  INK_SAC:         { taban-fiyat: 1.00, taban-stok: 10000, kategori: mob } # 1-3
+  GLOW_INK_SAC:    { taban-fiyat: 4.00, taban-stok: 6000,  kategori: mob } # 1.17+
+  RABBIT_HIDE:     { grup: deri, agirlik: 1, kategori: mob }
+  RABBIT_FOOT:     { taban-fiyat: 15.0, taban-stok: 3000,  kategori: mob } # %10 düşürme oranı.
+  PORKCHOP:        { grup: domuz-eti, agirlik: 1, kategori: mob } # 1-3, ortalama 2.
+  COOKED_PORKCHOP: { grup: domuz-eti, agirlik: 1, kategori: mob }
+  BEEF:            { grup: sigir-eti, agirlik: 1, kategori: mob }
+  COOKED_BEEF:     { grup: sigir-eti, agirlik: 1, kategori: mob }
+  CHICKEN:         { grup: tavuk-eti, agirlik: 1, kategori: mob }
+  COOKED_CHICKEN:  { grup: tavuk-eti, agirlik: 1, kategori: mob }
+  MUTTON:          { grup: koyun-eti, agirlik: 1, kategori: mob }
+  COOKED_MUTTON:   { grup: koyun-eti, agirlik: 1, kategori: mob }
+  RABBIT:          { taban-fiyat: 1.50, taban-stok: 8000,  kategori: mob }
+  COD:             { grup: morina, agirlik: 1, kategori: mob }
+  SALMON:          { grup: somon, agirlik: 1, kategori: mob }
+  COOKED_COD:      { grup: morina, agirlik: 1, kategori: mob }
+  COOKED_SALMON:   { grup: somon, agirlik: 1, kategori: mob }
+  TROPICAL_FISH:   { taban-fiyat: 3.00, taban-stok: 5000,  kategori: mob }
+  PUFFERFISH:      { taban-fiyat: 3.00, taban-stok: 5000,  kategori: mob }
+  PHANTOM_MEMBRANE: { taban-fiyat: 10.0, taban-stok: 4000, kategori: mob }
+  GHAST_TEAR:      { taban-fiyat: 25.0, taban-stok: 2000,  kategori: mob } # 0-1
+  MAGMA_CREAM:     { taban-fiyat: 4.00, taban-stok: 8000, satis-acik: false, kategori: mob } # Blaze powder + slime; çok girdili çıktı.
+  PRISMARINE_SHARD: { taban-fiyat: 3.00, taban-stok: 8000, kategori: mob }
+  PRISMARINE_CRYSTALS: { taban-fiyat: 5.00, taban-stok: 6000, kategori: mob }
+
+  # --- yapı blokları ---
+  COBBLESTONE:     { grup: tas, agirlik: 1.25, kategori: yapi } # 1 taş yumrusu -> 1 taş (fırın); tarif kütlesi eşit.
+  STONE:           { grup: tas, agirlik: 1.25, kategori: yapi }
+  STONE_BRICKS:    { grup: tas, agirlik: 1.25, kategori: yapi } # 4 taş -> 4 taş tuğlası; tarif kütlesi eşit.
+  GRANITE:         { grup: tas, agirlik: 1, kategori: yapi }    # 1 diyorit + 1 kuvars -> 2 granit.
+  DIORITE:         { grup: tas, agirlik: 1, kategori: yapi }    # 2 taş yumrusu + 2 kuvars -> 2 diyorit.
+  ANDESITE:        { grup: tas, agirlik: 1, kategori: yapi }    # 1 diyorit + 1 taş yumrusu -> 2 andezit.
+  DEEPSLATE:       { grup: deepslate, agirlik: 1, kategori: yapi } # 1.17+
+  COBBLED_DEEPSLATE: { grup: deepslate, agirlik: 1, kategori: yapi } # 1.17+; 1 kaba -> 1 işlenmiş (fırın), tarif kütlesi eşit.
+  TUFF:            { taban-fiyat: 0.40, taban-stok: 30000, kategori: yapi } # 1.17+
+  DIRT:            { taban-fiyat: 0.30, taban-stok: 60000, kategori: yapi }
+  SAND:            { grup: kum-cam, agirlik: 1, kategori: yapi }
+  RED_SAND:        { grup: kum-cam, agirlik: 1, kategori: yapi }
+  GRAVEL:          { grup: cakil, agirlik: 1, kategori: yapi }
+  CLAY_BALL:       { grup: kil-tugla, agirlik: 1, kategori: yapi } # Blok başına 4 kil topu.
+  BRICK:           { grup: kil-tugla, agirlik: 1, kategori: yapi } # 1 kil topu -> 1 tuğla; aynı tarif kütlesi.
+  BRICKS:          { grup: kil-tugla, agirlik: 4, kategori: yapi } # 4 tuğla -> 1 tuğla bloğu; tarif kütlesi tam 4.
+  TERRACOTTA:      { grup: kil-tugla, agirlik: 4, kategori: yapi } # 4 kil topu -> 1 kil bloğu -> 1 terrakota (fırın); tarif kütlesi tam 4.
+  GLASS:           { grup: kum-cam, agirlik: 1, kategori: yapi } # 1 kum -> 1 cam; aynı tarif kütlesi.
+  SANDSTONE:       { grup: kum-cam, agirlik: 4, kategori: yapi } # 4 kum -> 1 kumtaşı.
+  OAK_LOG:         { grup: ahsap, agirlik: 1, kategori: yapi }        # 1 kütük -> 4 tahta -> 8 çubuk.
+  SPRUCE_LOG:      { grup: ahsap, agirlik: 1, kategori: yapi }
+  BIRCH_LOG:       { grup: ahsap, agirlik: 1, kategori: yapi }
+  JUNGLE_LOG:      { grup: ahsap, agirlik: 1, kategori: yapi }
+  ACACIA_LOG:      { grup: ahsap, agirlik: 1, kategori: yapi }
+  DARK_OAK_LOG:    { grup: ahsap, agirlik: 1, kategori: yapi }
+  MANGROVE_LOG:    { grup: ahsap, agirlik: 1, kategori: yapi }         # 1.19+
+  CHERRY_LOG:      { grup: ahsap, agirlik: 1.0667, kategori: yapi }    # 1.20+; 1.60 taban korunur.
+  OAK_PLANKS:      { grup: ahsap, agirlik: 0.25, kategori: yapi }
+  STICK:           { grup: ahsap, agirlik: 0.125, kategori: yapi }
+  WHITE_WOOL:      { grup: ip-yun, agirlik: 4, kategori: yapi }
+  SNOW_BLOCK:      { taban-fiyat: 0.50, taban-stok: 20000, kategori: yapi }
+  PACKED_ICE:      { taban-fiyat: 3.00, taban-stok: 8000,  kategori: yapi }
+  MOSS_BLOCK:      { taban-fiyat: 0.80, taban-stok: 15000, kategori: yapi } # 1.17+
+  DRIPSTONE_BLOCK: { grup: dripstone, agirlik: 4, kategori: yapi } # 1.17+
+  POINTED_DRIPSTONE: { grup: dripstone, agirlik: 1, kategori: yapi } # 1.17+
+  CALCITE:         { taban-fiyat: 2.00, taban-stok: 8000,  kategori: yapi } # 1.17+
+  TORCH:           { taban-fiyat: 0.40, taban-stok: 30000, satis-acik: false, kategori: yapi } # Kömür + çubuk; çok girdili çıktı.
+  ARROW:           { taban-fiyat: 0.30, taban-stok: 20000, max-fiyat: 0.30, kategori: yapi } # Flint + çubuk + tüy -> 4; iskelet düşürmesi satılabilir kalır.
+  BOOK:            { taban-fiyat: 5.00, taban-stok: 8000, satis-acik: false, kategori: yapi } # 3 kâğıt + deri; çok girdili çıktı.
+
+  # --- nether / end ---
+  NETHERRACK:      { taban-fiyat: 0.20, taban-stok: 60000, kategori: nether-end }
+  SOUL_SAND:       { taban-fiyat: 1.00, taban-stok: 20000, kategori: nether-end }
+  SOUL_SOIL:       { taban-fiyat: 1.00, taban-stok: 20000, kategori: nether-end }
+  BASALT:          { taban-fiyat: 0.50, taban-stok: 30000, kategori: nether-end }
+  BLACKSTONE:      { taban-fiyat: 0.50, taban-stok: 30000, kategori: nether-end }
+  GLOWSTONE_DUST:  { grup: glowstone, agirlik: 1, kategori: nether-end }
+  GLOWSTONE:       { grup: glowstone, agirlik: 4, kategori: nether-end }
+  END_STONE:       { taban-fiyat: 1.00, taban-stok: 20000, kategori: nether-end }
+  PURPUR_BLOCK:    { grup: chorus-purpur, agirlik: 1, kategori: nether-end }
+  CHORUS_FRUIT:    { grup: chorus-purpur, agirlik: 1, kategori: nether-end }
+  CRIMSON_STEM:    { grup: ahsap, agirlik: 1.3334, kategori: nether-end } # 2.00 taban korunur; 1 gövde -> 8 çubuk.
+  WARPED_STEM:     { grup: ahsap, agirlik: 1.3334, kategori: nether-end } # 2.00 taban korunur; 1 gövde -> 8 çubuk.
+
+  # --- nadir ---
+  GOLDEN_APPLE:    { taban-fiyat: 130.0, taban-stok: 1000, satis-acik: false, kategori: nadir } # 8 külçe + elma; çok girdili, satış kapalı.
+  TNT:             { taban-fiyat: 18.0, taban-stok: 4000, satis-acik: false, kategori: nadir } # 5 barut + 4 kum; çok girdili, satış kapalı.
+  NAUTILUS_SHELL:  { taban-fiyat: 40.0, taban-stok: 1000, kategori: nadir }
+  SPONGE:          { taban-fiyat: 80.0, taban-stok: 500,  kategori: nadir }
+  SHULKER_SHELL:   { taban-fiyat: 150.0, taban-stok: 800, kategori: nadir } # %50 düşürme oranı.
+  DRAGON_BREATH:   { taban-fiyat: 30.0, taban-stok: 1000, kategori: nadir }
+  WITHER_ROSE:     { taban-fiyat: 40.0, taban-stok: 1000, kategori: nadir }
+  TOTEM_OF_UNDYING: { taban-fiyat: 500.0, taban-stok: 200, kategori: nadir }
+
+# Not: Elytra, ejderha yumurtası gibi YENİLENEMEZ item'lar bilerek listede yok;
+# markete koymak sunucu ekonomisini bozar. Yönetici riski bilerek ekleyebilir.
